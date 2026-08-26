@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { FileText, MapPin } from 'lucide-react';
+import { FileText, MapPin, Download } from 'lucide-react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 type PortfolioHeroProps = {
@@ -94,6 +94,16 @@ export default function PortfolioHero({ user }: PortfolioHeroProps) {
                   <FileText className="h-4 w-4" />
                   View Resume
                 </Link>
+              )}
+
+              {user.username && (
+                <a
+                  href={`/portfolio/${user.username}/pdf`}
+                  className="inline-flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </a>
               )}
 
               {user.githubUrl && (
