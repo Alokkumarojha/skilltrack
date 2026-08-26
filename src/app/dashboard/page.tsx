@@ -20,6 +20,7 @@ import AddEducationDialog from './components/add-education-dialog';
 import EditEducationDialog from './components/edit-education-dialog';
 import DeleteEducationDialog from './components/delete-education-dialog';
 import PortfolioStatusCard from '@/components/Portfolio-Status-Card';
+import RecentActivity from './components/recent-activity';
 import LearningProgress from './components/learning-progress';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -133,6 +134,43 @@ export default async function DashboardPage() {
     (completedItems / completionItems.length) * 100
   );
 
+  const activities = [
+    ...skills.map((skill) => ({
+      id: skill.id,
+      type: 'skill' as const,
+      title: skill.name,
+      createdAt: skill.createdAt,
+    })),
+
+    ...goals.map((goal) => ({
+      id: goal.id,
+      type: 'goal' as const,
+      title: goal.title,
+      createdAt: goal.createdAt,
+    })),
+
+    ...projects.map((project) => ({
+      id: project.id,
+      type: 'project' as const,
+      title: project.title,
+      createdAt: project.createdAt,
+    })),
+
+    ...experiences.map((experience) => ({
+      id: experience.id,
+      type: 'experience' as const,
+      title: `${experience.position} at ${experience.company}`,
+      createdAt: experience.createdAt,
+    })),
+
+    ...educations.map((education) => ({
+      id: education.id,
+      type: 'education' as const,
+      title: `${education.degree} at ${education.institution}`,
+      createdAt: education.createdAt,
+    })),
+  ];
+
   return (
     <main className="container mx-auto px-6 py-10">
       <div>
@@ -142,7 +180,7 @@ export default async function DashboardPage() {
           portfolioCompletion={portfolioCompletion}
           portfolioUrl={portfolioUrl}
         />
-
+        <RecentActivity activities={activities} />
         <section className="mt-10">
           <div className="mb-5 flex items-center justify-between">
             <div>
