@@ -143,41 +143,46 @@ export default function PortfolioHero({ user }: PortfolioHeroProps) {
             )}
 
             {/* Action Buttons & Social Links */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-2.5 pt-2">
+              {/* View Resume */}
               {user.resumeUrl && (
                 <Link
                   href={`/portfolio/${user.username}/resume`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 active:scale-95 cursor-pointer"
                 >
                   <FileText className="h-4 w-4" />
-                  View Resume
+                  <span>View Resume</span>
                 </Link>
               )}
 
+              {/* Generate Portfolio PDF */}
               {user.username && (
-                <a
+                <Link
                   href={`/portfolio/${user.username}/pdf`}
                   target="_blank"
-                  className="inline-flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 cursor-pointer"
                 >
                   <Download className="h-4 w-4" />
-                  Generate Portfolio PDF
-                </a>
+                  <span>Generate PDF</span>
+                </Link>
               )}
 
+              {/* Copy & Share Actions */}
               {user.username && (
                 <>
                   <button
                     type="button"
                     onClick={handleCopyLink}
-                    className="inline-flex min-w-[120px] shrink-0 items-center justify-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                    className="inline-flex min-w-[125px] shrink-0 items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 cursor-pointer"
                   >
                     {copied ? (
                       <>
-                        <Check className="h-4 w-4" />
-                        <span>Copied!</span>
+                        <Check className="h-4 w-4 text-emerald-500" />
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                          Copied!
+                        </span>
                       </>
                     ) : (
                       <>
@@ -190,23 +195,24 @@ export default function PortfolioHero({ user }: PortfolioHeroProps) {
                   <button
                     type="button"
                     onClick={handleShare}
-                    className="inline-flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground "
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 cursor-pointer"
                   >
                     <Share2 className="h-4 w-4" />
-                    Share
+                    <span>Share</span>
                   </button>
                 </>
               )}
 
+              {/* Social Profiles */}
               {user.githubUrl && (
                 <Link
                   href={user.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 cursor-pointer"
                 >
                   <FaGithub className="h-4 w-4" />
-                  GitHub
+                  <span>GitHub</span>
                 </Link>
               )}
 
@@ -215,10 +221,10 @@ export default function PortfolioHero({ user }: PortfolioHeroProps) {
                   href={user.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground active:scale-95 cursor-pointer"
                 >
-                  <FaLinkedin className="h-4 w-4" />
-                  LinkedIn
+                  <FaLinkedin className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <span>LinkedIn</span>
                 </Link>
               )}
             </div>
