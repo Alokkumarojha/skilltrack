@@ -21,6 +21,7 @@ import DeleteEducationDialog from './components/delete-education-dialog';
 import PortfolioStatusCard from '@/components/Portfolio-Status-Card';
 import RecentActivity from './components/recent-activity';
 import LearningProgress from './components/learning-progress';
+import PortfolioVisibility from './components/portfolio-visibility';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
@@ -230,6 +231,8 @@ export default async function DashboardPage() {
             total: totalViews,
           }}
         />
+
+        <PortfolioVisibility isPublic={user.isPortfolioPublic} />
         <RecentActivity activities={activities} />
       </div>
 
