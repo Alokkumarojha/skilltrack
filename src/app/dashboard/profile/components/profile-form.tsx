@@ -6,7 +6,6 @@ import {
   User,
   AtSign,
   MapPin,
-  FileText,
   FileDown,
   Loader2,
   Save,
@@ -17,6 +16,7 @@ import {
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 import { updatePortfolioProfile } from '@/app/dashboard/actions';
+import ProfileImageUpload from './profile-image-upload';
 import { toast } from '@/components/ui/toast';
 
 import { Button } from '@/components/ui/button';
@@ -41,6 +41,7 @@ type ProfileFormProps = {
     githubUrl: string | null;
     linkedinUrl: string | null;
     resumeUrl: string | null;
+    imageUrl: string | null;
     email: string;
   };
 };
@@ -54,6 +55,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const [githubUrl, setGithubUrl] = useState(user.githubUrl ?? '');
   const [linkedinUrl, setLinkedinUrl] = useState(user.linkedinUrl ?? '');
   const [resumeUrl, setResumeUrl] = useState(user.resumeUrl ?? '');
+  const [imageUrl, setImageUrl] = useState(user.imageUrl ?? '');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -158,6 +161,10 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         </CardHeader>
 
         <CardContent className="space-y-6 pt-6">
+          <ProfileImageUpload
+            imageUrl={imageUrl}
+            onUpload={(url) => setImageUrl(url)}
+          />
           <div className="grid gap-6 md:grid-cols-2">
             {/* Full Name */}
             <div className="space-y-2">

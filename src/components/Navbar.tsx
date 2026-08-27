@@ -12,6 +12,7 @@ import {
   Globe,
   ArrowRight,
   Code2,
+  UserRound,
 } from 'lucide-react';
 
 import { ModeToggle } from '@/components/mode-toggle';
@@ -20,6 +21,9 @@ import { buttonVariants } from '@/components/ui/button';
 export default function Navbar() {
   const pathname = usePathname();
   const { resolvedTheme } = useTheme();
+
+  // Check karein ki user abhi Profile page par hai ya Dashboard par
+  const isProfilePage = pathname.startsWith('/dashboard/profile');
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md transition-colors">
@@ -70,18 +74,32 @@ export default function Navbar() {
 
           {/* Signed In View */}
           <Show when="signed-in">
-            {/* Direct Quick Link to Dashboard */}
-            <Link
-              href="/dashboard"
-              className={buttonVariants({
-                variant: pathname === '/dashboard' ? 'default' : 'outline',
-                size: 'sm',
-                className: 'hidden sm:inline-flex font-medium gap-1.5',
-              })}
-            >
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboard
-            </Link>
+            {/* Dynamic Quick Link: Profile page par Dashboard button, baaki jagah Profile Settings button */}
+            {isProfilePage ? (
+              <Link
+                href="/dashboard"
+                className={buttonVariants({
+                  variant: 'outline',
+                  size: 'sm',
+                  className: 'hidden sm:inline-flex font-medium gap-1.5',
+                })}
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Back to Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard/profile"
+                className={buttonVariants({
+                  variant: 'outline',
+                  size: 'sm',
+                  className: 'hidden sm:inline-flex font-medium gap-1.5',
+                })}
+              >
+                <UserRound className="h-4 w-4" />
+                Back to Profile
+              </Link>
+            )}
 
             {/* Clerk User Button with Dynamic Theme Integration */}
             <div className="flex items-center pl-1 border-l">

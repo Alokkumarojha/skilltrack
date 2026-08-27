@@ -12,7 +12,6 @@ import DeleteGoalDialog from './components/delete-goal-dialog';
 import AddProjectDialog from './components/add-project-dialog';
 import EditProjectDialog from './components/edit-project-dialog';
 import DeleteProjectDialog from './components/delete-project-dialog';
-import EditProfileDialog from './components/edit-profile-dialog';
 import AddExperienceDialog from './components/add-experience-dialog';
 import EditExperienceDialog from './components/edit-experience-dialog';
 import DeleteExperienceDialog from './components/delete-experience-dialog';
@@ -181,92 +180,6 @@ export default async function DashboardPage() {
           portfolioUrl={portfolioUrl}
         />
         <RecentActivity activities={activities} />
-        <section className="mt-10">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold">My Profile</h2>
-
-              <p className="text-sm text-muted-foreground">
-                Manage your portfolio profile information.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                nativeButton={false}
-                render={
-                  <Link href="/dashboard/profile">
-                    <UserRound className="mr-2 h-4 w-4" />
-                    Edit Full Profile
-                  </Link>
-                }
-              />
-
-              <EditProfileDialog user={user} />
-            </div>
-          </div>
-
-          <Card>
-            <CardContent className="space-y-4 pt-6">
-              <div>
-                <h3 className="font-semibold">{user.name || 'Your Name'}</h3>
-
-                {user.headline && (
-                  <p className="text-sm text-muted-foreground">
-                    {user.headline}
-                  </p>
-                )}
-              </div>
-
-              {user.bio && (
-                <p className="text-sm text-muted-foreground">{user.bio}</p>
-              )}
-
-              {user.location && (
-                <p className="text-sm text-muted-foreground">
-                  📍 {user.location}
-                </p>
-              )}
-
-              <div className="flex flex-wrap gap-4 text-sm">
-                {user.githubUrl && (
-                  <a
-                    href={user.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    GitHub
-                  </a>
-                )}
-
-                {user.linkedinUrl && (
-                  <a
-                    href={user.linkedinUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    LinkedIn
-                  </a>
-                )}
-
-                {user.resumeUrl && (
-                  <a
-                    href={user.resumeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    Resume
-                  </a>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </section>
       </div>
 
       <section className="mt-10">
