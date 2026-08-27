@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/lib/current-user';
 import { UserCog, Sparkles } from 'lucide-react';
 import ProfileForm from './components/profile-form';
+import PortfolioVisibility from '../components/portfolio-visibility';
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -36,6 +37,8 @@ export default async function ProfilePage() {
         </div>
       </div>
 
+      {/* Portfolio Visibility */}
+      <PortfolioVisibility isPublic={user.isPortfolioPublic} />
       {/* Main Profile Form Wrapper */}
       <div className="rounded-2xl border bg-card p-6 shadow-xs sm:p-8">
         <ProfileForm user={user} />

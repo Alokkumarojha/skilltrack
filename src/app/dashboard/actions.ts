@@ -1197,3 +1197,29 @@ export async function updatePortfolioProfile(
 
   return updatedUser;
 }
+
+// Update Portfolio Visibility
+export async function updatePortfolioVisibility(isPublic: boolean) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      isPortfolioPublic: isPublic,
+    },
+  });
+
+  revalidatePath('/dashboard');
+
+  if (updatedUser.username) {
+    revalidatePath(`/portfolio/${updatedUser.username}`);
+  }
+
+  return updatedUser;
+}

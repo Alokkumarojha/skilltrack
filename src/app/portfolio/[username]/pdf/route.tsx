@@ -94,7 +94,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
     status: 200,
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${user.username}-portfolio.pdf"`,
+      'Content-Disposition': `inline; filename="${user.username}-portfolio.pdf"`,
     },
   });
 }

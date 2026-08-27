@@ -7,11 +7,14 @@ import {
   AtSign,
   MapPin,
   FileDown,
+  FileText,
   Loader2,
   Save,
   Link2,
   ExternalLink,
   LayoutDashboard,
+  Upload,
+  Trash2,
 } from 'lucide-react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
@@ -56,10 +59,114 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const [linkedinUrl, setLinkedinUrl] = useState(user.linkedinUrl ?? '');
   const [resumeUrl, setResumeUrl] = useState(user.resumeUrl ?? '');
   const [imageUrl, setImageUrl] = useState(user.imageUrl ?? '');
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [removingResume, setRemovingResume] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  async function handleResumeUpload(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (file.type !== 'application/pdf') {
+      toast.add({
+        type: 'error',
+        title: 'Invalid File',
+        description: 'Please select a PDF file.',
+      });
+
+      event.target.value = '';
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.add({
+        type: 'error',
+        title: 'File Too Large',
+        description: 'Resume size must be less than 5 MB.',
+      });
+
+      event.target.value = '';
+      return;
+    }
+
+    setUploadingResume(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload/resume', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to upload resume.');
+      }
+
+      setResumeUrl(data.resumeUrl);
+
+      toast.add({
+        type: 'success',
+        title: 'Resume Uploaded',
+        description: 'Your resume has been uploaded successfully.',
+      });
+    } catch (error) {
+      toast.add({
+        type: 'error',
+        title: 'Upload Failed',
+        description:
+          error instanceof Error ? error.message : 'Failed to upload resume.',
+        priority: 'high',
+      });
+    } finally {
+      setUploadingResume(false);
+      event.target.value = '';
+    }
+  }
+
+  async function handleResumeRemove() {
+    setRemovingResume(true);
+
+    try {
+      const response = await fetch('/api/upload/resume', {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to remove resume.');
+      }
+
+      setResumeUrl('');
+
+      toast.add({
+        type: 'success',
+        title: 'Resume Removed',
+        description: 'Your resume has been removed successfully.',
+      });
+    } catch (error) {
+      toast.add({
+        type: 'error',
+        title: 'Remove Failed',
+        description:
+          error instanceof Error ? error.message : 'Failed to remove resume.',
+        priority: 'high',
+      });
+    } finally {
+      setRemovingResume(false);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -341,26 +448,137 @@ export default function ProfileForm({ user }: ProfileFormProps) {
             </div>
           </div>
 
-          {/* Resume Link */}
-          <div className="space-y-2">
-            <Label
-              htmlFor="resumeUrl"
-              className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-            >
-              Resume Link (PDF / Drive)
+          {/* Resume Upload */}
+          <div className="space-y-3">
+            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Resume
             </Label>
-            <div className="relative">
-              <FileDown className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/70" />
-              <Input
-                id="resumeUrl"
-                type="url"
-                value={resumeUrl}
-                onChange={(e) => setResumeUrl(e.target.value)}
-                placeholder="https://drive.google.com/your-resume.pdf"
-                maxLength={300}
-                className="pl-9 font-mono text-xs"
-              />
-            </div>
+
+            {resumeUrl ? (
+              <div className="rounded-xl border bg-muted/20 p-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <FileText className="h-5 w-5" />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="font-semibold">Resume uploaded</p>
+                      <p className="text-xs text-muted-foreground">
+                        PDF • Ready to view
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href={resumeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          View Resume
+                        </Link>
+                      }
+                    />
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={uploadingResume || removingResume}
+                      onClick={() =>
+                        document.getElementById('resume-upload')?.click()
+                      }
+                    >
+                      {uploadingResume ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Replacing...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Replace
+                        </>
+                      )}
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={uploadingResume || removingResume}
+                      onClick={handleResumeRemove}
+                    >
+                      {removingResume ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Removing...
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Remove
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed bg-muted/10 p-5">
+                <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                      <FileDown className="h-5 w-5" />
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">No resume uploaded</p>
+                      <p className="text-xs text-muted-foreground">
+                        Upload your resume as a PDF, up to 5 MB.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={uploadingResume}
+                    onClick={() =>
+                      document.getElementById('resume-upload')?.click()
+                    }
+                  >
+                    {uploadingResume ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload Resume
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <input
+              id="resume-upload"
+              type="file"
+              accept="application/pdf"
+              onChange={handleResumeUpload}
+              className="hidden"
+            />
           </div>
         </CardContent>
       </Card>

@@ -23,6 +23,7 @@ model User {
   linkedinUrl String?
   resumeUrl   String?
   imageUrl    String?
+  isPortfolioPublic Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

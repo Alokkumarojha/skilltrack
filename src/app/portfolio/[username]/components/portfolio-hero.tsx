@@ -1,7 +1,10 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FileText, MapPin, Download } from 'lucide-react';
+import { FileText, MapPin, Download, Copy, Share2, Check } from 'lucide-react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { useState } from 'react';
+import { toast } from '@/components/ui/toast';
 
 type PortfolioHeroProps = {
   user: {
@@ -18,6 +21,63 @@ type PortfolioHeroProps = {
 };
 
 export default function PortfolioHero({ user }: PortfolioHeroProps) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+
+      setCopied(true);
+
+      toast.add({
+        type: 'success',
+        title: 'Link Copied',
+        description: 'Your portfolio link has been copied.',
+      });
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch {
+      toast.add({
+        type: 'error',
+        title: 'Copy Failed',
+        description: 'Could not copy the portfolio link.',
+      });
+    }
+  }
+
+  async function handleShare() {
+    const url = window.location.href;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${user.name ?? 'Portfolio'} | SkillTrack`,
+          text: user.headline ?? 'Check out my professional portfolio.',
+          url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+
+        toast.add({
+          type: 'success',
+          title: 'Link Copied',
+          description: 'Your portfolio link has been copied.',
+        });
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+
+      toast.add({
+        type: 'error',
+        title: 'Share Failed',
+        description: 'Could not share the portfolio link.',
+      });
+    }
+  }
   return (
     <section className="relative overflow-hidden border-b bg-gradient-to-b from-background via-background/90 to-muted/30 py-16 sm:py-24">
       {/* Subtle Ambient Glow Effect */}
@@ -86,7 +146,7 @@ export default function PortfolioHero({ user }: PortfolioHeroProps) {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               {user.resumeUrl && (
                 <Link
-                  href={user.resumeUrl}
+                  href={`/portfolio/${user.username}/resume`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md"
@@ -99,11 +159,43 @@ export default function PortfolioHero({ user }: PortfolioHeroProps) {
               {user.username && (
                 <a
                   href={`/portfolio/${user.username}/pdf`}
+                  target="_blank"
                   className="inline-flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                   <Download className="h-4 w-4" />
-                  Download PDF
+                  Generate Portfolio PDF
                 </a>
+              )}
+
+              {user.username && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="inline-flex min-w-[120px] shrink-0 items-center justify-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4" />
+                        <span>Copy Link</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    className="inline-flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground "
+                  >
+                    <Share2 className="h-4 w-4" />
+                    Share
+                  </button>
+                </>
               )}
 
               {user.githubUrl && (
