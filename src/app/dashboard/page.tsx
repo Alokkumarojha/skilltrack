@@ -38,7 +38,16 @@ export default async function DashboardPage() {
 
   const portfolioUrl = user.username ? `/portfolio/${user.username}` : null;
 
-  const [skills, goals, projects, experiences, educations] = await Promise.all([
+  const [
+    skills,
+    goals,
+    projects,
+    experiences,
+    educations,
+    todayViews,
+    thisWeekViews,
+    totalViews,
+  ] = await Promise.all([
     prisma.skill.findMany({
       where: {
         userId: user.id,
@@ -65,6 +74,7 @@ export default async function DashboardPage() {
         createdAt: 'desc',
       },
     }),
+
     prisma.experience.findMany({
       where: {
         userId: user.id,
@@ -73,6 +83,7 @@ export default async function DashboardPage() {
         startDate: 'desc',
       },
     }),
+
     prisma.education.findMany({
       where: {
         userId: user.id,
@@ -81,8 +92,43 @@ export default async function DashboardPage() {
         startDate: 'desc',
       },
     }),
-  ]);
 
+    // Today's views
+    prisma.portfolioView.count({
+      where: {
+        userId: user.id,
+        viewedAt: {
+          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        },
+      },
+    }),
+
+    // This week's views
+    prisma.portfolioView.count({
+      where: {
+        userId: user.id,
+        viewedAt: {
+          gte: (() => {
+            const date = new Date();
+            const day = date.getDay();
+            const diff = day === 0 ? 6 : day - 1;
+
+            date.setDate(date.getDate() - diff);
+            date.setHours(0, 0, 0, 0);
+
+            return date;
+          })(),
+        },
+      },
+    }),
+
+    // Total views
+    prisma.portfolioView.count({
+      where: {
+        userId: user.id,
+      },
+    }),
+  ]);
   function formatStatus(status: string) {
     return status
       .toLowerCase()
@@ -178,6 +224,11 @@ export default async function DashboardPage() {
           completionItems={completionItems}
           portfolioCompletion={portfolioCompletion}
           portfolioUrl={portfolioUrl}
+          portfolioViews={{
+            today: todayViews,
+            thisWeek: thisWeekViews,
+            total: totalViews,
+          }}
         />
         <RecentActivity activities={activities} />
       </div>

@@ -12,10 +12,10 @@ datasource db {
 model User {
   id      String @id @default(cuid())
   clerkId String @unique
-  name        String?
-  email       String  @unique
+  name    String?
+  email   String  @unique
   username String? @unique
-  
+
   headline    String?
   bio         String?
   location    String?
@@ -28,11 +28,23 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  skills      Skill[]
-  goals       Goal[]
-  projects    Project[]
-  experiences Experience[]
-  educations  Education[]
+  skills          Skill[]
+  goals           Goal[]
+  projects        Project[]
+  experiences     Experience[]
+  educations      Education[]
+  portfolioViews  PortfolioView[]
+}
+
+model PortfolioView {
+  id        String   @id @default(cuid())
+  userId    String
+  viewedAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([viewedAt])
 }
 
 model Skill {
@@ -128,3 +140,5 @@ model Education {
 
   @@index([userId])
 }
+
+

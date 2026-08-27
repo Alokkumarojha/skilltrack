@@ -11,6 +11,8 @@ import {
   Check,
   Globe2,
   Sparkles,
+  Eye,
+  TrendingUp,
 } from 'lucide-react';
 
 type CompletionItem = {
@@ -22,12 +24,18 @@ type PortfolioStatusCardProps = {
   completionItems: CompletionItem[];
   portfolioCompletion: number;
   portfolioUrl?: string | null;
+  portfolioViews: {
+    today: number;
+    thisWeek: number;
+    total: number;
+  };
 };
 
 export default function PortfolioStatusCard({
   completionItems,
   portfolioCompletion,
   portfolioUrl,
+  portfolioViews,
 }: PortfolioStatusCardProps) {
   const [copied, setCopied] = useState(false);
   const isComplete = portfolioCompletion === 100;
@@ -80,6 +88,49 @@ export default function PortfolioStatusCard({
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* Portfolio Analytics */}
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border bg-muted/20 p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Eye className="h-4 w-4" />
+              Today
+            </div>
+
+            <p className="mt-2 text-2xl font-black tracking-tight">
+              {portfolioViews.today}
+            </p>
+
+            <p className="mt-1 text-xs text-muted-foreground">Views today</p>
+          </div>
+
+          <div className="rounded-xl border bg-muted/20 p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <TrendingUp className="h-4 w-4" />
+              This Week
+            </div>
+
+            <p className="mt-2 text-2xl font-black tracking-tight">
+              {portfolioViews.thisWeek}
+            </p>
+
+            <p className="mt-1 text-xs text-muted-foreground">
+              Views this week
+            </p>
+          </div>
+
+          <div className="rounded-xl border bg-muted/20 p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Eye className="h-4 w-4" />
+              Total
+            </div>
+
+            <p className="mt-2 text-2xl font-black tracking-tight">
+              {portfolioViews.total}
+            </p>
+
+            <p className="mt-1 text-xs text-muted-foreground">All-time views</p>
+          </div>
+        </div>
         {/* Progress Bar */}
         <div className="space-y-2">
           <Progress

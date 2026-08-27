@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
 
 import PortfolioHero from './components/portfolio-hero';
 import PortfolioSkills from './components/portfolio-skills';
@@ -84,13 +85,14 @@ export async function generateMetadata({
 
 export default async function PortfolioPage({ params }: PortfolioPageProps) {
   const { username } = await params;
-
+  const { userId: viewerClerkId } = await auth();
   const user = await prisma.user.findUnique({
     where: {
       username: username.toLowerCase(),
     },
     select: {
       id: true,
+      clerkId: true,
       name: true,
       username: true,
       isPortfolioPublic: true,
@@ -192,6 +194,14 @@ export default async function PortfolioPage({ params }: PortfolioPageProps) {
         </div>
       </main>
     );
+  }
+
+  if (viewerClerkId !== user.clerkId) {
+    await prisma.portfolioView.create({
+      data: {
+        userId: user.id,
+      },
+    });
   }
 
   return (
